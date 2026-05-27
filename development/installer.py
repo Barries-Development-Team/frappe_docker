@@ -56,8 +56,8 @@ def get_args_parser():
         "--site-name",
         action="store",
         type=str,
-        help="Site name, should end with .localhost, default: development.localhost",  # noqa: E501
-        default="development.localhost",
+        help="Site name, should end with .localhost, default: barriesdev.localhost",  # noqa: E501
+        default="barriesdev.localhost",
     )
     parser.add_argument(
         "-r",
