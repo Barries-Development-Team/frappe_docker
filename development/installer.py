@@ -198,11 +198,27 @@ def init_bench_if_not_exist(args):
 
 
 def create_site_in_bench(args):
+    bench_dir = os.path.join(os.getcwd(), args.bench_name)
+    site_path = os.path.join(bench_dir, "sites", args.site_name)
+
+    if os.path.exists(site_path):
+        cprint(f"Existing site '{args.site_name}' found. Dropping before recreating...", level=3)
+        subprocess.call(
+            [
+                "bench",
+                "drop-site", args.site_name,
+                "--db-root-password", "123",
+                "--no-backup",
+                "--force",
+            ],
+            cwd=bench_dir,
+        )
+
     if "mariadb" == args.db_type:
         cprint("Set db_host", level=3)
         subprocess.call(
             ["bench", "set-config", "-g", "db_host", "mariadb"],
-            cwd=os.getcwd() + "/" + args.bench_name,
+            cwd=bench_dir,
         )
         new_site_cmd = [
             "bench",
@@ -218,7 +234,7 @@ def create_site_in_bench(args):
         cprint("Set db_host", level=3)
         subprocess.call(
             ["bench", "set-config", "-g", "db_host", "postgresql"],
-            cwd=os.getcwd() + "/" + args.bench_name,
+            cwd=bench_dir,
         )
         new_site_cmd = [
             "bench",
@@ -229,7 +245,7 @@ def create_site_in_bench(args):
             f"--db-root-password=123",  # Replace with your PostgreSQL password
             f"--admin-password={args.admin_password}",
         ]
-    apps = os.listdir(f"{os.getcwd()}/{args.bench_name}/apps")
+    apps = os.listdir(os.path.join(bench_dir, "apps"))
     apps.remove("frappe")
     for app in apps:
         new_site_cmd.append(f"--install-app={app}")
@@ -237,7 +253,7 @@ def create_site_in_bench(args):
     cprint(f"Creating Site {args.site_name} ...", level=2)
     subprocess.call(
         new_site_cmd,
-        cwd=os.getcwd() + "/" + args.bench_name,
+        cwd=bench_dir,
     )
 
 
