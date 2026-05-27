@@ -19,6 +19,8 @@ info()    { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error()   { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
+trap 'echo -e "${RED}[ERROR]${NC} Setup failed at line $LINENO. Check the output above for details." >&2' ERR
+
 # ── Prerequisite checks ──────────────────────────────────────
 info "Checking prerequisites..."
 
@@ -76,7 +78,7 @@ fi
 
 # ── Start devcontainer via Docker Compose ────────────────────
 info "Starting devcontainer services..."
-docker compose -f .devcontainer/docker-compose.yml up -d
+docker compose -f .devcontainer/docker-compose.yml up -d || error "Failed to start devcontainer services. Check that Docker is running and ports 8000-8005 are available."
 
 # Wait for the frappe container to be running and healthy
 info "Waiting for frappe container to be ready..."
@@ -110,7 +112,7 @@ info "MariaDB is ready."
 # ── Run Frappe installer ──────────────────────────────────────
 info "Running Frappe installer (this will take several minutes)..."
 docker compose -f .devcontainer/docker-compose.yml exec -T -w /workspace/development frappe \
-    python installer.py
+    python installer.py || error "Frappe installer failed. Check the output above for details."
 
 # ── Open VS Code ─────────────────────────────────────────────
 echo ""
