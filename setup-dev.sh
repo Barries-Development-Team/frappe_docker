@@ -98,7 +98,7 @@ info "Frappe container is up: $FRAPPE_CONTAINER"
 # Wait for MariaDB to be healthy before running the installer
 info "Waiting for MariaDB to be ready..."
 ATTEMPTS=0
-until docker compose -f .devcontainer/docker-compose.yml exec mariadb mariadb-admin ping -h localhost --silent 2>/dev/null; do
+until docker compose -f .devcontainer/docker-compose.yml exec -T mariadb mariadb-admin ping -h localhost --silent 2>/dev/null; do
     ATTEMPTS=$((ATTEMPTS + 1))
     if [ $ATTEMPTS -ge $MAX_ATTEMPTS ]; then
         error "Timed out waiting for MariaDB to be ready."
