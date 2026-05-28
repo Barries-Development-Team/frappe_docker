@@ -105,7 +105,7 @@ info "Frappe container is up: $FRAPPE_CONTAINER"
 # Wait for MariaDB to be healthy before running the installer
 info "Waiting for MariaDB to be ready..."
 ATTEMPTS=0
-until $DC exec -T mariadb mariadb-admin ping -h localhost -u root -p123 --silent 2>/dev/null; do
+until $DC exec -T mariadb mariadb-admin ping -h localhost -u root -p123 --silent </dev/null 2>/dev/null; do
     ATTEMPTS=$((ATTEMPTS + 1))
     if [ $ATTEMPTS -ge $MAX_ATTEMPTS ]; then
         error "Timed out waiting for MariaDB to be ready."
@@ -116,7 +116,7 @@ info "MariaDB is ready."
 
 # ── Run Frappe installer ──────────────────────────────────────
 info "Running Frappe installer (this will take several minutes)..."
-$DC exec -T frappe python installer.py || error "Frappe installer failed. Check the output above for details."
+$DC exec -T frappe python installer.py </dev/null || error "Frappe installer failed. Check the output above for details."
 
 # ── Open VS Code ─────────────────────────────────────────────
 echo ""
