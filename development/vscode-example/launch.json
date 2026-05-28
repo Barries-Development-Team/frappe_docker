@@ -8,6 +8,7 @@
       "name": "Bench Web",
       "type": "debugpy",
       "request": "launch",
+      "python": "${workspaceFolder}/frappe-bench/env/bin/python",
       "program": "${workspaceFolder}/frappe-bench/apps/frappe/frappe/utils/bench_helper.py",
       "args": [
         "frappe",
