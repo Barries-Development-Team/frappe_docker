@@ -111,7 +111,7 @@ info "MariaDB is ready."
 
 # ── Run Frappe installer ──────────────────────────────────────
 info "Running Frappe installer (this will take several minutes)..."
-docker compose -f .devcontainer/docker-compose.yml exec -T -w /workspace/development frappe \
+docker compose -f .devcontainer/docker-compose.yml exec -T frappe \
     python installer.py || error "Frappe installer failed. Check the output above for details."
 
 # ── Open VS Code ─────────────────────────────────────────────
