@@ -77,8 +77,13 @@ else
 fi
 
 # ── Start devcontainer via Docker Compose ────────────────────
+# Match the project name VS Code Dev Containers uses so both share
+# the same containers and volumes instead of creating duplicates.
+DC_PROJECT="$(basename "$PWD")_devcontainer"
+DC="docker compose --project-name $DC_PROJECT -f .devcontainer/docker-compose.yml"
+
 info "Starting devcontainer services..."
-docker compose -f .devcontainer/docker-compose.yml up -d || error "Failed to start devcontainer services. Check that Docker is running and ports 8000-8005 are available."
+$DC up -d || error "Failed to start devcontainer services. Check that Docker is running and ports 8000-8005 are available."
 
 # Wait for the frappe container to be running and healthy
 info "Waiting for frappe container to be ready..."
@@ -87,7 +92,7 @@ ATTEMPTS=0
 MAX_ATTEMPTS=30
 
 while [ -z "$FRAPPE_CONTAINER" ]; do
-    FRAPPE_CONTAINER=$(docker compose -f .devcontainer/docker-compose.yml ps -q frappe 2>/dev/null || true)
+    FRAPPE_CONTAINER=$($DC ps -q frappe 2>/dev/null || true)
     ATTEMPTS=$((ATTEMPTS + 1))
     if [ $ATTEMPTS -ge $MAX_ATTEMPTS ]; then
         error "Timed out waiting for frappe container to start."
@@ -100,7 +105,7 @@ info "Frappe container is up: $FRAPPE_CONTAINER"
 # Wait for MariaDB to be healthy before running the installer
 info "Waiting for MariaDB to be ready..."
 ATTEMPTS=0
-until docker compose -f .devcontainer/docker-compose.yml exec -T mariadb mariadb-admin ping -h localhost -u root -p123 --silent 2>/dev/null; do
+until $DC exec -T mariadb mariadb-admin ping -h localhost -u root -p123 --silent 2>/dev/null; do
     ATTEMPTS=$((ATTEMPTS + 1))
     if [ $ATTEMPTS -ge $MAX_ATTEMPTS ]; then
         error "Timed out waiting for MariaDB to be ready."
@@ -111,8 +116,7 @@ info "MariaDB is ready."
 
 # ── Run Frappe installer ──────────────────────────────────────
 info "Running Frappe installer (this will take several minutes)..."
-docker compose -f .devcontainer/docker-compose.yml exec -T frappe \
-    python installer.py || error "Frappe installer failed. Check the output above for details."
+$DC exec -T frappe python installer.py || error "Frappe installer failed. Check the output above for details."
 
 # ── Open VS Code ─────────────────────────────────────────────
 echo ""
