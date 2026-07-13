@@ -52,6 +52,8 @@ services:
       # Enable if you require git cloning
       # - ${HOME}/.ssh:/home/frappe/.ssh
     working_dir: /workspace/development
+    extra_hosts:
+      - "barriesdev.localhost:127.0.0.1"
     ports:
       - 8000-8005:8000-8005
       - 9000-9005:9000-9005
