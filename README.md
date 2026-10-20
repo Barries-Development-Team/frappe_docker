@@ -56,13 +56,15 @@ frappe_docker/
 
 The full `frappe_docker` documentation is available in [`docs/`](docs/) and published at [frappe.github.io/frappe_docker](https://frappe.github.io/frappe_docker/).
 
+Documentation is gradually being organized into [Tutorials](docs/10-tutorials/index.md), [How-to Guides](docs/11-how-to/index.md), [Reference](docs/12-reference/index.md), and [Explanation](docs/13-explanation/index.md). The category indexes explain each category's purpose. To help, see the [documentation contribution guide](docs/11-how-to/01-contribute-documentation.md).
+
 ### Recommended entry points:
 
 - **New here:** [Getting Started Guide](docs/getting-started.md)
 - **Choosing a setup:** [Deployment methods](docs/01-getting-started/01-choosing-a-deployment-method.md)
 - **ARM64 notes:** [ARM64](docs/01-getting-started/03-arm64.md)
 - **Container setup overview:** [Container Setup Overview](docs/02-setup/01-overview.md)
-- **Running in production:** [Production docs](docs/03-production/)
+- **Running in production:** [Deployment how-to guides](docs/11-how-to/)
 - **Operating a deployment:** [Operations docs](docs/04-operations/)
 - **Development workflows:** [Development](docs/05-development/01-development.md)
 - **FAQ:** [Frequently Asked Questions](https://github.com/frappe/frappe_docker/wiki/Frequently-Asked-Questions)
@@ -103,6 +105,8 @@ Wait for a couple of minutes for ERPNext site to be created or check `create-sit
 ## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+See the [repository versioning policy](docs/12-reference/01-repository-versioning-policy.md) for release classification, compatibility boundaries, and build-tool minimum changes.
 
 This repository is only for container related stuff. You also might want to contribute to:
 

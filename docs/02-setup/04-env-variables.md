@@ -47,6 +47,40 @@ Then edit `.env` and set variables according to your needs.
 
 ---
 
+## Volume Bind Mounts
+
+| Variable                    | Purpose                                                                                      | Default | When to Set                                        |
+| --------------------------- | -------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------- |
+| `SITES_DATA_LOCATION`       | Host directory for the `sites` volume; must be an absolute path and already exist            | -       | Required for `compose.bind-mount-sites.yaml`       |
+| `DB_DATA_LOCATION`          | Host directory for the `db-data` volume; must be an absolute path and already exist          | -       | Required for `compose.bind-mount-db-data.yaml`     |
+| `REDIS_QUEUE_DATA_LOCATION` | Host directory for the `redis-queue-data` volume; must be an absolute path and already exist | -       | Required for `compose.bind-mount-redis-queue.yaml` |
+
+The host directory must exist before `docker compose up -d` and must be writable by the user the container runs as:
+
+| Directory          | Owner / Permissions                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `sites`            | uid `1000`, gid `0` (root group) with group write permissions (`chmod -R g=u` or `775`), supporting arbitrary UIDs in OpenShift |
+| `db-data`          | uid/gid `999` (the `mariadb` or `postgres` image)                                                                               |
+| `redis-queue-data` | uid/gid `999` (the `redis` image)                                                                                               |
+
+> Warning: with a bind mount, the data lives on the host, not inside the Docker volume. Removing the volume (for example with `docker compose down -v`) will **not** delete the data. To actually erase the data, delete the host directory manually with `rm -r <data path>`.
+
+**Example:**
+
+```bash
+mkdir -p /srv/frappe/{sites,db-data,redis-queue-data}
+chown 1000:0 /srv/frappe/sites && chmod 775 /srv/frappe/sites
+chown 999:999 /srv/frappe/db-data /srv/frappe/redis-queue-data
+```
+
+```bash
+SITES_DATA_LOCATION=/srv/frappe/sites
+DB_DATA_LOCATION=/srv/frappe/db-data
+REDIS_QUEUE_DATA_LOCATION=/srv/frappe/redis-queue-data
+```
+
+---
+
 ## Reverse Proxy and SSL (HTTPS) Configuration
 
 ### Traefik (compose.proxy.yaml / compose.https.yaml)
@@ -136,6 +170,7 @@ If your site is named `example.com` and you access it via that domain, no need t
 
 | Variable               | Purpose                            | Default        | Allowed Values                               |
 | ---------------------- | ---------------------------------- | -------------- | -------------------------------------------- |
+| `NGINX_LISTEN_PORT`    | Sets the `listen` directive        | `8080`         | `{port}`                                     |
 | `BACKEND`              | Backend service address and port   | `0.0.0.0:8000` | `{host}:{port}`                              |
 | `SOCKETIO`             | Socket.IO service address and port | `0.0.0.0:9000` | `{host}:{port}`                              |
 | `PROXY_READ_TIMEOUT`   | Upstream request timeout           | `120s`         | Any nginx timeout value (e.g., `300s`, `5m`) |
